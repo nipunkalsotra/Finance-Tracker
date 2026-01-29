@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Personal Economics Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js CDN for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <h1>Finance<span>Tracker</span></h1>
+                    <p class="tagline">Personal Economics Dashboard</p>
+                </div>
+                <div class="header-actions">
+                    <button id="darkModeToggle" class="btn-icon" title="Toggle Dark Mode">
+                        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                    <button id="exportBtn" class="btn-secondary">Export CSV</button>
+                    <button id="resetBtn" class="btn-danger">Reset App</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard">
+            
+            <!-- Summary Cards Section -->
+            <section class="summary-cards">
+                <div class="card card-income">
+                    <div class="card-icon">↑</div>
+                    <div class="card-content">
+                        <p class="card-label">Total Income</p>
+                        <h2 class="card-value" id="totalIncome">₹0.00</h2>
+                    </div>
+                </div>
+                
+                <div class="card card-expense">
+                    <div class="card-icon">↓</div>
+                    <div class="card-content">
+                        <p class="card-label">Total Expenses</p>
+                        <h2 class="card-value" id="totalExpense">₹0.00</h2>
+                    </div>
+                </div>
+                
+                <div class="card card-balance">
+                    <div class="card-icon">≈</div>
+                    <div class="card-content">
+                        <p class="card-label">Net Balance</p>
+                        <h2 class="card-value" id="netBalance">₹0.00</h2>
+                    </div>
+                </div>
+                
+                <div class="card card-savings">
+                    <div class="card-icon">★</div>
+                    <div class="card-content">
+                        <p class="card-label">Savings Progress</p>
+                        <h2 class="card-value" id="savingsProgress">0%</h2>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="savingsFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Budget & Goals Section -->
+            <section class="budget-section">
+                <div class="card card-budget">
+                    <h3 class="card-title">Monthly Budget</h3>
+                    <div class="budget-input-group">
+                        <label for="monthlyBudget">Set Budget Amount:</label>
+                        <input type="number" id="monthlyBudget" placeholder="Enter budget" min="0" step="100">
+                        <button id="setBudgetBtn" class="btn-primary">Set Budget</button>
+                    </div>
+                    <div class="budget-status" id="budgetStatus">
+                        <p class="budget-amount">Budget: <span id="budgetAmount">Not Set</span></p>
+                        <p class="budget-spent">Spent: <span id="budgetSpent">₹0.00</span></p>
+                        <p class="budget-remaining">Remaining: <span id="budgetRemaining">-</span></p>
+                    </div>
+                    <div class="budget-alert" id="budgetAlert"></div>
+                </div>
+
+                <div class="card card-savings-goal">
+                    <h3 class="card-title">Savings Goal</h3>
+                    <div class="budget-input-group">
+                        <label for="savingsGoal">Set Savings Goal:</label>
+                        <input type="number" id="savingsGoal" placeholder="Enter goal" min="0" step="100">
+                        <button id="setSavingsBtn" class="btn-primary">Set Goal</button>
+                    </div>
+                    <div class="budget-status">
+                        <p class="budget-amount">Goal: <span id="goalAmount">Not Set</span></p>
+                        <p class="budget-spent">Saved: <span id="savedAmount">₹0.00</span></p>
+                        <p class="budget-remaining">To Go: <span id="goalRemaining">-</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Transaction Section -->
+            <section class="transaction-form-section">
+                <div class="card card-form">
+                    <h3 class="card-title">Add Transaction</h3>
+                    <form id="transactionForm" class="transaction-form">
+                        <div class="form-group">
+                            <label for="transactionType">Type</label>
+                            <select id="transactionType" required>
+                                <option value="">Select Type</option>
+                                <option value="income">Income</option>
+                                <option value="expense">Expense</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionAmount">Amount (₹)</label>
+                            <input type="number" id="transactionAmount" placeholder="0.00" min="0.01" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionCategory">Category</label>
+                            <select id="transactionCategory" required>
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionDescription">Description</label>
+                            <input type="text" id="transactionDescription" placeholder="Enter description" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionDate">Date</label>
+                            <input type="date" id="transactionDate" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-full">Add Transaction</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="card card-filters">
+                    <h3 class="card-title">Filter Transactions</h3>
+                    <div class="filter-controls">
+                        <div class="form-group">
+                            <label for="filterMonth">Month</label>
+                            <select id="filterMonth">
+                                <option value="">All Months</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="filterYear">Year</label>
+                            <select id="filterYear">
+                                <option value="">All Years</option>
+                            </select>
+                        </div>
+
+                        <button id="clearFiltersBtn" class="btn-secondary">Clear Filters</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions List Section -->
+            <section class="transactions-section">
+                <div class="card card-transactions">
+                    <h3 class="card-title">Transaction History</h3>
+                    <div class="table-container">
+                        <table id="transactionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsBody">
+                                <tr class="no-data">
+                                    <td colspan="6">No transactions yet. Add your first transaction above.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="card card-chart">
+                    <h3 class="card-title">Expenses by Category</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+
+                <div class="card card-chart">
+                    <h3 class="card-title">Income vs Expenses</h3>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+
+                <div class="card card-chart card-chart-wide">
+                    <h3 class="card-title">Expense Trends</h3>
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>© 2026 Finance Tracker | College End-Term Project</p>
+        </footer>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Transaction</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="editForm" class="transaction-form">
+                <input type="hidden" id="editTransactionId">
+                
+                <div class="form-group">
+                    <label for="editType">Type</label>
+                    <select id="editType" required>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editAmount">Amount (₹)</label>
+                    <input type="number" id="editAmount" min="0.01" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" required>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <input type="text" id="editDescription" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDate">Date</label>
+                    <input type="date" id="editDate" required>
+                </div>
+
+                <button type="submit" class="btn-primary btn-full">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-confirm">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmCancel" class="btn-secondary">Cancel</button>
+                <button id="confirmOk" class="btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
